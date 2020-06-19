@@ -19,8 +19,14 @@ const useDragging = ({ onDragStart = noop, onDrag, onDragEnd = noop }) => {
 	};
 
 	const activate = (e, touch = false) => {
-		setDragging(true);
+		// fix trackpad soft click
+		document.addEventListener(touch ? 'touchend' : 'mouseup', deactivate);
+		
+		setTimeout(() => {
+			document.removeEventListener(touch ? 'touchend' : 'mouseup', deactivate);
+		});
 
+		setDragging(true);
 		onDragStart(!touch ? e : {
 			...e,
 			clientX: e.touches[0].pageX,
@@ -30,7 +36,6 @@ const useDragging = ({ onDragStart = noop, onDrag, onDragEnd = noop }) => {
 
 	const deactivate = () => {
 		setDragging(false);
-
 		onDragEnd(context.change);
 		setContext({});
 	};

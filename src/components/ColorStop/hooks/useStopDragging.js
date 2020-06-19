@@ -25,7 +25,6 @@ const useStopDragging = ({ limits, stop, initialPos, colorStopRef, onPosChange, 
 		// Removing if out of drop limit on Y axis.
 		const top = getColorStopRefTop(colorStopRef);
 		if (Math.abs(clientY - top) > limits.drop) {
-			//deactivate();
 			return onDeleteColor(id);
 		}
 
@@ -36,10 +35,9 @@ const useStopDragging = ({ limits, stop, initialPos, colorStopRef, onPosChange, 
 		onPosChange({ id, offset: limitedPos });
 	};
 
-	const [handleMouseDown, activate] = useDragging({
+	const [handleMouseDown] = useDragging({
 		onDragStart: ({ clientX }) => {
 			setPosStart(clientX);
-
 			onDragStart(stop.id);
 		},
 		onDrag: handleDrag,
@@ -47,8 +45,10 @@ const useStopDragging = ({ limits, stop, initialPos, colorStopRef, onPosChange, 
 	});
 
 	useEffect(() => {
-		const { pointX } = stop;
-		pointX && activate({ clientX: pointX });
+		if(stop.pointX) {
+			setPosStart(stop.pointX);
+			onDragStart(stop.id);
+		}
 	}, []);
 
 	return [
